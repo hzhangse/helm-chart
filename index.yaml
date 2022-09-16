@@ -10,25 +10,25 @@ entries:
       artifacthub.io/operator: "true"
     apiVersion: v2
     appVersion: 0.59.1
-    created: "2022-09-15T18:43:04.602786+08:00"
+    created: "2022-09-16T16:12:11.644649+08:00"
     dependencies:
     - condition: kubeStateMetrics.enabled
       name: kube-state-metrics
-      repository: https://prometheus-community.github.io/helm-charts
+      repository: file://./charts/kube-state-metrics
       version: 4.18.*
     - condition: nodeExporter.enabled
       name: prometheus-node-exporter
-      repository: https://prometheus-community.github.io/helm-charts
+      repository: file://./charts/prometheus-node-exporter
       version: 4.2.*
     - condition: grafana.enabled
       name: grafana
-      repository: https://grafana.github.io/helm-charts
+      repository: file://./charts/grafana
       version: 6.38.*
     description: kube-prometheus-stack collects Kubernetes manifests, Grafana dashboards,
       and Prometheus rules combined with documentation and scripts to provide easy
       to operate end-to-end Kubernetes cluster monitoring with Prometheus using the
       Prometheus Operator.
-    digest: a840a05c7d99ad52df1b13e7e6fa9952d3c5e4e4701623f19c0ee54d54f6dbe7
+    digest: 2735d3b67b74190c51ab6d8a6a84f917df646ff56dc4bab8cb01718a50f7a7be
     home: https://github.com/prometheus-operator/kube-prometheus
     icon: https://raw.githubusercontent.com/prometheus/prometheus.github.io/master/assets/prometheus_logo-cb55bb5c346.png
     keywords:
@@ -62,7 +62,7 @@ entries:
   spark-operator:
   - apiVersion: v2
     appVersion: v1beta2-1.2.3-3.1.1
-    created: "2022-09-15T18:43:04.604012+08:00"
+    created: "2022-09-16T16:12:11.648123+08:00"
     description: A Helm chart for Spark on Kubernetes operator
     digest: 3b3c73b7cdf7911406aec9b212f986d57d725783c12b169f82ee875d99896856
     home: https://github.com/hzhangse/spark-operator-chart
@@ -75,4 +75,4 @@ entries:
     urls:
     - https://hzhangse.github.io/helm-chart/spark-operator-1.1.3.tgz
     version: 1.1.3
-generated: "2022-09-15T18:43:04.576181+08:00"
+generated: "2022-09-16T16:12:11.614035+08:00"
