@@ -10,7 +10,7 @@ entries:
       artifacthub.io/operator: "true"
     apiVersion: v2
     appVersion: 0.59.1
-    created: "2022-09-16T16:12:11.644649+08:00"
+    created: "2022-09-19T11:35:20.59717+08:00"
     dependencies:
     - condition: kubeStateMetrics.enabled
       name: kube-state-metrics
@@ -28,7 +28,7 @@ entries:
       and Prometheus rules combined with documentation and scripts to provide easy
       to operate end-to-end Kubernetes cluster monitoring with Prometheus using the
       Prometheus Operator.
-    digest: 2735d3b67b74190c51ab6d8a6a84f917df646ff56dc4bab8cb01718a50f7a7be
+    digest: 7d5ca4a8ebd64c962b9d923e8f487946b9fe7b73d7650fbfca8d8798178b70fa
     home: https://github.com/prometheus-operator/kube-prometheus
     icon: https://raw.githubusercontent.com/prometheus/prometheus.github.io/master/assets/prometheus_logo-cb55bb5c346.png
     keywords:
@@ -59,20 +59,33 @@ entries:
     urls:
     - https://hzhangse.github.io/helm-chart/kube-prometheus-stack-40.0.0.tgz
     version: 40.0.0
-  spark-operator:
+  strimzi-kafka-operator:
   - apiVersion: v2
-    appVersion: v1beta2-1.2.3-3.1.1
-    created: "2022-09-16T16:12:11.648123+08:00"
-    description: A Helm chart for Spark on Kubernetes operator
-    digest: 3b3c73b7cdf7911406aec9b212f986d57d725783c12b169f82ee875d99896856
-    home: https://github.com/hzhangse/spark-operator-chart
+    appVersion: 0.31.0
+    created: "2022-09-19T11:35:20.60057+08:00"
+    description: 'Strimzi: Apache Kafka running on Kubernetes'
+    digest: 3aa340c2f75c0bcc035b1865e78b3d2e0f4c8f1ef3102bf2cb84ba616272302d
+    home: https://strimzi.io/
+    icon: https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/main/documentation/logo/strimzi_logo.png
     keywords:
-    - spark
+    - kafka
+    - queue
+    - stream
+    - event
+    - messaging
+    - datastore
+    - topic
     maintainers:
-    - email: rainbow954@163.com
-      name: hzhangse
-    name: spark-operator
+    - name: Frawless
+    - name: ppatierno
+    - name: samuel-hawker
+    - name: scholzj
+    - name: tombentley
+    - name: sknot-rh
+    name: strimzi-kafka-operator
+    sources:
+    - https://github.com/strimzi/strimzi-kafka-operator
     urls:
-    - https://hzhangse.github.io/helm-chart/spark-operator-1.1.3.tgz
-    version: 1.1.3
-generated: "2022-09-16T16:12:11.614035+08:00"
+    - https://hzhangse.github.io/helm-chart/strimzi-kafka-operator-0.31.0.tgz
+    version: 0.31.0
+generated: "2022-09-19T11:35:20.568869+08:00"
