@@ -10,7 +10,7 @@ entries:
       artifacthub.io/operator: "true"
     apiVersion: v2
     appVersion: 0.59.1
-    created: "2022-09-19T11:35:20.59717+08:00"
+    created: "2022-09-19T19:03:16.948335+08:00"
     dependencies:
     - condition: kubeStateMetrics.enabled
       name: kube-state-metrics
@@ -59,10 +59,21 @@ entries:
     urls:
     - https://hzhangse.github.io/helm-chart/kube-prometheus-stack-40.0.0.tgz
     version: 40.0.0
+  spark-api:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-09-19T19:03:16.948756+08:00"
+    description: A Helm chart for Kubernetes
+    digest: 655acf693dfb0acf46d5f0026be861f3209144d8f6762a6482cc0d6aaa5213ba
+    name: spark-api
+    type: application
+    urls:
+    - https://hzhangse.github.io/helm-chart/spark-api-0.1.0.tgz
+    version: 0.1.0
   strimzi-kafka-operator:
   - apiVersion: v2
     appVersion: 0.31.0
-    created: "2022-09-19T11:35:20.60057+08:00"
+    created: "2022-09-19T19:03:16.953308+08:00"
     description: 'Strimzi: Apache Kafka running on Kubernetes'
     digest: 3aa340c2f75c0bcc035b1865e78b3d2e0f4c8f1ef3102bf2cb84ba616272302d
     home: https://strimzi.io/
@@ -88,4 +99,4 @@ entries:
     urls:
     - https://hzhangse.github.io/helm-chart/strimzi-kafka-operator-0.31.0.tgz
     version: 0.31.0
-generated: "2022-09-19T11:35:20.568869+08:00"
+generated: "2022-09-19T19:03:16.919569+08:00"
