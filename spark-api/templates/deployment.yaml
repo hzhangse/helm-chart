@@ -19,22 +19,10 @@ spec:
     spec:
       containers:
       - env:
-        - name: INFLUXDB_HOST
-          value: {{ .Values.env.InfluxDBHost }}
-        - name: INFLUXDB_DATABASE_NAME
-          value: {{ .Values.env.InfluxDBDatabase }}
-        - name: PROM_REMOTE_WRITE_URL
-          value: {{ .Values.env.PromRemoteWriteUrl }}
-        - name: PROM_HTTP_URL
-          value: {{ .Values.env.PromHttpUrl }}
-        - name: DASHBOARD_URL_TEMPLATE
-          value: {{ .Values.env.DashboardUrlTemplate }}
-        - name: Brokers
-          value: {{ .Values.env.KafkaBrokers }}
-        - name: Topic
-          value: {{ .Values.env.KafkaTopic }}
-        - name: batchSendNum
-          value: {{ .Values.env.BatchSendNum }}
+        {{- range $key, $val := .Values.env }}
+        - name: {{  $key }}
+          value: {{  $val | quote }}
+        {{- end }}  
         image: {{ .Values.api.sparkapi.image.repository }}:{{ .Values.api.sparkapi.image.tag
           | default .Chart.AppVersion }}
         imagePullPolicy: {{ .Values.api.sparkapi.image.imagePullPolicy }}

@@ -17,6 +17,6 @@ env:
   PromRemoteWriteUrl: http://kong-proxy.kong.svc.cluster.local/api/v1/write
   PromHttpUrl: http://thanos-query.thanos.svc.cluster.local:9090
   DashboardUrlTemplate: http://10.1.2.63:31219/d/-H0ElOqmiv/spark_perf_dashboard_v03?from=%s&to=%s&var-UserName=xxx&var-ApplicationId=%s
-  KafkaBrokers: kafka-all-broker.kafka.svc.cluster.local:29092
+  KafkaBrokers: my-cluster-kafka-brokers.kafka.svc.cluster.local:9092
   KafkaTopic: sparkmeasure
   BatchSendNum: '1000'
