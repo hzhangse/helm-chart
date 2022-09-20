@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "spark-api.fullname" . }}-api
+  name: {{ include "spark-api.fullname" . }}
   labels:
     app: sparkapi
   {{- include "spark-api.labels" . | nindent 4 }}

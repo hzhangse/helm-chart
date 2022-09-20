@@ -19,4 +19,4 @@ env:
   DashboardUrlTemplate: http://10.1.2.63:31219/d/-H0ElOqmiv/spark_perf_dashboard_v03?from=%s&to=%s&var-UserName=xxx&var-ApplicationId=%s
   KafkaBrokers: kafka-all-broker.kafka.svc.cluster.local:29092
   KafkaTopic: sparkmeasure
-  BatchSendNum: 1000
+  BatchSendNum: '1000'
