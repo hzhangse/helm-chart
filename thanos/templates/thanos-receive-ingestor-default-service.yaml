@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "thanos.fullname" . }}-receive-ingestor-default
+  labels:
+    app.kubernetes.io/component: database-write-hashring
+    app.kubernetes.io/instance: thanos-receive-ingestor-default
+    app.kubernetes.io/name: thanos-receive
+    controller.receive.thanos.io/hashring: default
+  {{- include "thanos.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.receiveIngestorDefault.type }}
+  selector:
+    app.kubernetes.io/component: database-write-hashring
+    app.kubernetes.io/instance: thanos-receive-ingestor-default
+    app.kubernetes.io/name: thanos-receive
+    controller.receive.thanos.io/hashring: default
+  ports:
+	{{- .Values.receiveIngestorDefault.ports | toYaml | nindent 2 -}}

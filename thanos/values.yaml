@@ -1,0 +1,81 @@
+hashringConfig:
+  hashringsJson: '[{"endpoints": ["thanos-receive-ingestor-default-0.thanos-receive-ingestor-default.thanos.svc.cluster.local:10901"],
+    "hashring": "default", "tenants": [ ]}]'
+kubernetesClusterDomain: cluster.local
+query:
+  ports:
+  - name: grpc
+    port: 10901
+    targetPort: 10901
+  - name: http
+    port: 9090
+    targetPort: 9090
+  replicas: 1
+  thanosQuery:
+    image:
+      repository: quay.io/thanos/thanos
+      tag: v0.24.0
+  type: ClusterIP
+  sidecarstore:
+    enabled: false
+    service:  ''
+receiveIngestorDefault:
+  ports:
+  - name: grpc
+    port: 10901
+    targetPort: 10901
+  - name: http
+    port: 10902
+    targetPort: 10902
+  - name: remote-write
+    port: 19291
+    targetPort: 19291
+  type: ClusterIP
+  volume:
+    volumeMode: Filesystem
+    storageClassName: longhorn
+    storageSize: 3Gi    
+receiveRouter:
+  ports:
+  - name: grpc
+    port: 10901
+    targetPort: 10901
+  - name: http
+    port: 10902
+    targetPort: 10902
+  - name: remote-write
+    port: 19291
+    targetPort: 19291
+  replicas: 1
+  thanosReceive:
+    image:
+      repository: quay.io/thanos/thanos
+      tag: v0.24.0
+  type: ClusterIP
+store:
+  ports:
+  - name: grpc
+    port: 10901
+    targetPort: 10901
+  - name: http
+    port: 10902
+    targetPort: 10902
+  type: ClusterIP
+  volume:
+    volumeMode: Filesystem
+    storageClassName: longhorn
+    storageSize: 2Gi 
+# aws  
+objectstore:   
+  # type: s3
+  # config:
+  #   bucket: thanos-store-test1
+  #   region: us-west-2
+  #   endpoint: s3.us-west-2.amazonaws.com
+  #   access_key: replace with yours
+  #   secret_key: replace with yours
+  #   insecure: false
+  #   signature_version2: false  
+  type: FILESYSTEM
+  config:
+    directory: "/var/thanos-store"
