@@ -1,0 +1,43 @@
+{{- if  .Values.kafkacluster.enabled }}
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: {{ .Values.kafkacluster.namespace }}
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: {{ .Values.kafkacluster.name }}
+  namespace: {{ .Values.kafkacluster.namespace }}
+spec:
+  kafka:
+    version: {{ .Values.kafkacluster.version }}
+    replicas: {{ .Values.kafkacluster.replicas.kafka }}
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+        authentication:
+          type: tls
+      - name: external
+        port: 9094
+        type: {{ .Values.kafkacluster.externallistener.type }}
+        tls: false        
+    config:
+       {{- toYaml .Values.kafkacluster.config  | nindent 6 }} 
+    storage:
+       {{- toYaml .Values.kafkacluster.storage.kafka  | nindent 6 }} 
+  zookeeper:
+    replicas: {{ .Values.kafkacluster.replicas.zookeeper }}
+    storage:
+      {{- toYaml .Values.kafkacluster.storage.kafka  | nindent 6 }} 
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
+
+{{- end }}

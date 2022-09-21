@@ -149,3 +149,36 @@ labelsExclusionPattern: ""
 generateNetworkPolicy: true
 # Override the value for Connect build timeout
 connectBuildTimeoutMs: 300000
+# used for kafkacluster cr
+kafkacluster:
+  name: kafka
+  enabled: true
+  version: 3.2.0
+  replicas:
+    kafka: 3
+    zookeeper: 3
+  namespace: kafka
+  externallistener:
+    type:  nodeport
+  config: 
+    auto.create.topics.enable: true
+    num.partitions: 32
+    offsets.topic.replication.factor: 3
+    transaction.state.log.replication.factor: 3
+    transaction.state.log.min.isr: 2
+    default.replication.factor: 3
+    min.insync.replicas: 2
+    inter.broker.protocol.version: "3.2"    
+  storage:
+     kafka:
+       type: persistent-claim
+       size: 5Gi
+       class: longhorn
+       deleteClaim: true   
+     zookeeper:
+       type: persistent-claim
+       size: 5Gi
+       class: longhorn
+       deleteClaim: true      
+          
+    
