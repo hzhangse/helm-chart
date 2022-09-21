@@ -1,0 +1,63 @@
+prometheus:
+  prometheusSpec:
+    enableRemoteWriteReceiver: true
+    podAntiAffinity: "hard"
+
+    ## If anti-affinity is enabled sets the topologyKey to use for anti-affinity.
+    ## This can be changed to, for example, failure-domain.beta.kubernetes.io/zone
+    ##
+    podAntiAffinityTopologyKey: kubernetes.io/hostname
+    remoteWrite: 
+    - url: http://thanos-receive-router.thanos.svc.cluster.local:19291
+
+    containers: 
+    - name: prometheus
+      args:
+        - "--web.console.templates=/etc/prometheus/consoles"
+        - "--web.console.libraries=/etc/prometheus/console_libraries"
+        - "--config.file=/etc/prometheus/config_out/prometheus.env.yaml"
+        - "--web.enable-remote-write-receiver"
+        - "--storage.tsdb.path=/prometheus"
+        - "--web.enable-lifecycle"
+        - "--storage.tsdb.no-lockfile"
+        - "--web.enable-admin-api"
+        - "--web.route-prefix=/"
+        - "--web.config.file=/etc/prometheus/web_config/web-config.yaml"
+        - "--storage.tsdb.min-block-duration=10m"
+        - "--storage.tsdb.max-block-duration=10m"
+        - "--storage.tsdb.retention.size=800MB"
+        - "--storage.tsdb.retention.time=1h"      
+    storageSpec: 
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          resources:
+            requests:
+              storage: 3Gi    
+
+thanos:
+  compactor:
+    enabled: true
+  storegateway:
+    enabled: true 
+  receiver:
+    enabled: true
+  receiveDistributor:
+    enabled: true
+  minio:
+    enabled: true 
+    service: 
+      type: NodePort
+  
+    auth: 
+      rootPassword: admin123
+  
+  
+  objstoreConfig: |-
+    type: s3
+    config:
+      bucket: thanos
+      endpoint: {{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000
+      access_key: admin
+      secret_key: admin123
+      insecure: true                
