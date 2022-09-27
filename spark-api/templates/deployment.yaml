@@ -37,5 +37,27 @@ spec:
         name: sparkapi
         ports:
         - containerPort: 8087
-          protocol: TCP
+          protocol: TCP   
+        readinessProbe:
+          failureThreshold: 5       #检测失败5次表示未就绪
+          initialDelaySeconds: 10   #延迟加载时间
+          periodSeconds: 10          #重试时间间隔
+          timeoutSeconds: 5         #超时时间设置
+          successThreshold: 1      #检查成功为2次表示就绪
+          exec:
+            command:
+            - curl
+            - -m 5 
+            - {{ .Release.Name }}-bridge-service:8080/ready
+        livenessProbe:
+          failureThreshold: 5       #检测失败5次表示未就绪
+          initialDelaySeconds: 10   #延迟加载时间
+          periodSeconds: 10          #重试时间间隔
+          timeoutSeconds: 5         #超时时间设置
+          successThreshold: 1       #检查成功为2次表示就绪
+          exec:
+            command:
+            - curl 
+            - -m 5 
+            - {{ .Release.Name }}-bridge-service:8080/healthy            
         resources: {}
