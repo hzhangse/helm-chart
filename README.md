@@ -51,10 +51,14 @@ kubectl apply -f ./CR/kafka-persistent-local.yaml -n kafka
 
 # install spark-api
 helm package spark-api/
-helm install --dry-run --debug -n spark --create-namespace spark-api hzhangse-helmrepo/spark-api >sparkapi-debug.yaml
-helm install --dry-run --debug -n spark --create-namespace spark-api ./spark-api >sparkapi-debug.yaml
-helm install --debug -n spark --create-namespace spark-api hzhangse-helmrepo/spark-api 
+helm install --dry-run --debug -n spark --create-namespace spark-metrics-collector hzhangse-helmrepo/spark-api >sparkapi-debug.yaml
+helm install --dry-run --debug -n spark --create-namespace spark-metrics-collector ./spark-api >sparkapi-debug.yaml
+helm install --debug -n spark --create-namespace spark-metrics-collector hzhangse-helmrepo/spark-api 
 helm install  --debug -n spark --create-namespace  spark-metrics-collector ./spark-api >sparkapi-debug.yaml
 helm uninstall  -n spark metric
 
 helm install --debug -n spark --create-namespace my ./spark/helm
+
+
+# install spark dashboard
+helm install  --debug --dry-run -n spark-dashboard --create-namespace  spark-dashboard ./spark-dashboard/charts >dashboard-debug.yaml
