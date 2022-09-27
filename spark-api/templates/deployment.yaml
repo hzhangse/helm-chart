@@ -17,6 +17,14 @@ spec:
         app: sparkapi
       {{- include "spark-api.selectorLabels" . | nindent 8 }}
     spec:
+      initContainers:
+        - command:
+            - sh
+            - -c
+            - until curl -m 5  {{ .Release.Name }}-bridge-service:8080/ready; do echo waiting for kafka start; sleep 8; done;
+          image: odise/busybox-curl:latest
+          name: wait-for-kafka-ready
+
       containers:
       - env:
         {{- range $key, $val := .Values.env }}
