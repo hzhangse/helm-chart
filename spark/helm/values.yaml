@@ -1,0 +1,7 @@
+kubernetesClusterDomain: cluster.local
+sparkDeploy33:
+  replicas: 1
+  spark:
+    image:
+      repository: registry.cn-shanghai.aliyuncs.com/kyligence/spark
+      tag: v3.3-prom

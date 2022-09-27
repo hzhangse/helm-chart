@@ -8,7 +8,7 @@ prometheus:
     ##
     podAntiAffinityTopologyKey: kubernetes.io/hostname
     remoteWrite: 
-    - url: http://thanos-receive-router.thanos.svc.cluster.local:19291
+    - url: http://kube-prometheus-thanos-receive.monitor.svc.cluster.local:19291/api/v1/receive
 
     containers: 
     - name: prometheus
@@ -36,19 +36,71 @@ prometheus:
               storage: 3Gi    
 
 thanos:
+  queryFrontend:
+    enabled: true 
+    service: 
+      type: NodePort
+
+  query: 
+   dnsDiscovery:
+    sidecarsService: kube-prometheus-prometheus-thanos
+    sidecarsNamespace: monitoring  
+
+  bucketweb:
+    enabled: true
+    service: 
+      type: NodePort    
+
   compactor:
     enabled: true
+    persistence: 
+      enabled: true
+      storageClass: longhorn
+      accessModes: 
+        - ReadWriteOnce
+      size: 1Gi
+
   storegateway:
-    enabled: true 
-  receiver:
     enabled: true
+    extraFlags:
+      - --sync-block-duration=3m
+      - --chunk-pool-size=1GB    
+    persistence: 
+      enabled: true
+      storageClass: longhorn
+      accessModes: 
+        - ReadWriteOnce
+      size: 1Gi
+
+
+
+  receive:
+    enabled: true
+    service: 
+      additionalHeadless: true
+    mode: dual-mode
+    replicationFactor: 1
+    replicaCount: 2
+    persistence: 
+      enabled: true
+      storageClass: longhorn
+      accessModes: 
+        - ReadWriteOnce
+      size: 1Gi
+
   receiveDistributor:
     enabled: true
+
   minio:
     enabled: true 
     service: 
       type: NodePort
-  
+    persistence: 
+      enabled: true
+      storageClass: longhorn
+      accessModes: 
+        - ReadWriteOnce
+      size: 2Gi
     auth: 
       rootPassword: admin123
   
@@ -61,3 +113,17 @@ thanos:
       access_key: admin
       secret_key: admin123
       insecure: true                
+
+prometheus-node-exporter: 
+  service: 
+    port: 9102
+    targetPort: 9102 
+
+kube-state-metrics:
+  image:
+    repository: bitnami/kube-state-metrics
+    tag: 2.6.0
+
+grafana:
+  service: 
+    type: NodePort

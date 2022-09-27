@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mychart.fullname" . }}-deploy33
+  labels:
+    app: spark-deploy33
+  {{- include "mychart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.sparkDeploy33.replicas }}
+  selector:
+    matchLabels:
+      app: spark-deploy33
+    {{- include "mychart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: spark-deploy33
+      {{- include "mychart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - command:
+        - sh
+        - -c
+        - cp /opt/spark/work-dir/test/run.sh /opt/spark/work-dir && chmod a+x /opt/spark/work-dir/run.sh  &&
+          tail -f /opt/entrypoint.sh
+        env:
+        - name: v_sa_secret
+          value: my-release-spark-token-scxcd
+        image: {{ .Values.sparkDeploy33.spark.image.repository }}:{{ .Values.sparkDeploy33.spark.image.tag
+          | default .Chart.AppVersion }}
+        name: spark
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: sa-secret-volume
+        - mountPath: /opt/spark/work-dir/test
+          name: test-volume
+      serviceAccountName: {{ include "mychart.fullname" . }}
+      volumes:
+      - name: sa-secret-volume
+        secret:
+          defaultMode: 420
+          secretName: my-release-spark-token-scxcd
+      - name: test-volume
+        secret:
+          defaultMode: 420
+          secretName: testscript
+---
