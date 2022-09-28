@@ -468,13 +468,13 @@ $SPARK_HOME/bin/spark-submit \
     --conf "spark.kubernetes.executor.podTemplateFile=${jobname}_${i}_pod_template.yaml"  \
     --conf "spark.plugins=ch.cern.CgroupMetrics"     \
     --conf "spark.cernSparkPlugin.registerOnDriver=true"     \
-    --conf "spark.extraListeners=ch.cern.sparkmeasure.KafkaSinkExtended" \
+    --conf "spark.extraListeners=ch.cern.sparkmeasure.KafkaSinkExtended,ch.cern.sparkmeasure.InfluxDBSink" \
+    --conf spark.sparkmeasure.influxdbURL="http://spark-dashboard-influx.spark-dashboard.svc.cluster.local:8086" \
+    --conf spark.sparkmeasure.influxdbStagemetrics=true \
     --conf "spark.sparkmeasure.kafkaBroker=spark-metrics-collector-kafka-brokers.spark.svc.cluster.local:9092" \
     --conf "spark.sparkmeasure.kafkaTopic=sparkmeasure" \
     --conf "spark.driver.extraClassPath=/opt/spark/plugins/*:/opt/spark/listeners/*:/opt/spark/listeners/lib/*"  \
     --conf "spark.executor.extraClassPath=/opt/spark/plugins/*"  \
-    --conf "spark.metrics.conf.*.source.jvm.class=org.apache.spark.metrics.source.JvmSource"    \
-    --conf "spark.metrics.appStatusSource.enabled=true"     \
     --conf "spark.ui.prometheus.enabled=true" \
     --conf "spark.kubernetes.driver.annotation.prometheus.io/scrape=true" \
     --conf "spark.kubernetes.driver.annotation.prometheus.io/path=/metrics/executors/prometheus" \
@@ -492,6 +492,14 @@ $SPARK_HOME/bin/spark-submit \
     --conf "spark.metrics.conf.master.sink.servlet.path=/metrics/master/json" \
     --conf "spark.metrics.conf.applications.sink.servlet.path=/metrics/applications/json" \
     --conf "spark.metrics.conf.*.sink.jmx.class=org.apache.spark.metrics.sink.JmxSink" \
+    --conf "spark.metrics.conf.*.sink.graphite.class"="org.apache.spark.metrics.sink.GraphiteSink" \
+    --conf "spark.metrics.conf.*.sink.graphite.host"="spark-dashboard-influx.spark-dashboard.svc.cluster.local" \
+    --conf "spark.metrics.conf.*.sink.graphite.port"=2003 \
+    --conf "spark.metrics.conf.*.sink.graphite.period"=10 \
+    --conf "spark.metrics.conf.*.sink.graphite.unit"=seconds \
+    --conf "spark.metrics.conf.*.sink.graphite.prefix"="kyligence" \
+    --conf "spark.metrics.conf.*.source.jvm.class"="org.apache.spark.metrics.source.JvmSource" \
+    --conf spark.metrics.appStatusSource.enabled=true \
     --conf "spark.eventLog.enabled=false"      --conf "spark.kubernetes.container.image.pullPolicy=${spark_imagePullPolicy}"     \
     --conf "spark.executor.extraJavaOptions=-javaagent:/opt/spark/listeners/lib/jmx_prometheus_javaagent-0.17.0.jar=8080:/opt/spark/listeners/lib/spark-jmx.yml"  \
     --conf "spark.driver.extraJavaOptions=-javaagent:/opt/spark/listeners/lib/jmx_prometheus_javaagent-0.17.0.jar=8080:/opt/spark/listeners/lib/spark-jmx.yml"  \
