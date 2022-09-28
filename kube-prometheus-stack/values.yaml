@@ -3369,4 +3369,6 @@ thanosRuler:
 cleanPrometheusOperatorObjectNames: false
 
 thanos: 
-  enabled: true
+  enabled: false
+spark-dashboard: 
+  enabled: false  

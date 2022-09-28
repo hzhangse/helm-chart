@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-spark-dashboard-datasource
+  labels:
+    grafana_datasource: "1"  
+data:
+  influx-datasource-config.yaml: |
+    apiVersion: 1
+    
+    datasources:
+    - name: influx-sparkmeasure
+      type: influxdb
+      access: proxy
+      orgId: 1
+      url: http://{{ .Release.Name }}-influx:8086
+      password:
+      user:
+      database:
+        sparkmeasure
+      basicAuth:
+      basicAuthUser:
+      basicAuthPassword:
+      withCredentials:
+      isDefault:
+      version: 1
+      editable: true
+    - name: influx-graphite
+      type: influxdb
+      access: proxy
+      orgId: 1
+      url: http://{{ .Release.Name }}-influx:8086
+      password:
+      user:
+      database:
+        graphite
+      basicAuth:
+      basicAuthUser:
+      basicAuthPassword:
+      withCredentials:
+      isDefault:
+      version: 1
+      editable: true
