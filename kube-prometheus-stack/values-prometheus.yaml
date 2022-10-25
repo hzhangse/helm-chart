@@ -1,8 +1,38 @@
+prometheusOperator:
+  image:
+    repository: quay.io/prometheus-operator/prometheus-operator
+    tag: v0.59.1
+    sha: ""
+    pullPolicy: IfNotPresent
+  prometheusConfigReloader:
+    image:
+      repository: quay.io/prometheus-operator/prometheus-config-reloader
+      tag: v0.59.1
+      sha: ""    
+  admissionWebhooks:
+    patch:
+      image:
+        repository: dyrnq/kube-webhook-certgen
+        tag: v1.3.0
+        sha: ""
+        pullPolicy: IfNotPresent
+
+alertmanager: 
+  alertmanagerSpec:
+    ## Image of Alertmanager
+    image:
+      repository: quay.io/prometheus/alertmanager
+      tag: v0.24.0
+  
 prometheus:
   service:
     type: NodePort
     nodePort: 30091
   prometheusSpec:
+    image:
+      repository: quay.io/prometheus/prometheus
+      tag: v2.38.0
+      sha: ""
     enableRemoteWriteReceiver: true
     podAntiAffinity: "hard"
 
@@ -100,6 +130,15 @@ prometheus:
           
 thanos:
   enabled: true
+  alertmanagerSpec:
+    image:
+      repository: quay.io/prometheus/alertmanager
+      tag: v0.24.0
+      sha: ""  
+  image:
+    registry: docker.io
+    repository: bitnami/thanos
+    tag: 0.28.0-scratch-r0
 
   queryFrontend:
     enabled: true 
@@ -158,6 +197,10 @@ thanos:
 
   minio:
     enabled: true 
+    image:
+      registry: docker.io
+      repository: bitnami/minio
+      tag: 2022.8.22-debian-11-r0
     service: 
       type: NodePort
     persistence: 
@@ -183,6 +226,9 @@ prometheus-node-exporter:
   service: 
     port: 9102
     targetPort: 9102 
+  image:
+    repository: quay.io/prometheus/node-exporter
+    tag: "v1.3.1"    
 
 kube-state-metrics:
   image:
@@ -192,10 +238,22 @@ kube-state-metrics:
 grafana:
   service: 
     type: NodePort
+  image:
+    repository: grafana/grafana  
+    tag: "9.1.4"
+  testFramework:
+    enabled: true
+    image: "bats/bats"
+    tag: "v1.4.1"
+  sidecar:
+    image:
+      repository: quay.io/kiwigrid/k8s-sidecar
+      tag: 1.19.2
 
 spark-dashboard:
   enabled: true     
   influxdb:  
+    image: "influxdb:1.8.10"
     storage:
       class: "longhorn"
       type: "ReadWriteOnce"
