@@ -1,4 +1,7 @@
 prometheus:
+  service:
+    type: NodePort
+    nodePort: 30091
   prometheusSpec:
     enableRemoteWriteReceiver: true
     podAntiAffinity: "hard"
@@ -33,8 +36,68 @@ prometheus:
           storageClassName: longhorn
           resources:
             requests:
-              storage: 3Gi    
-
+              storage: 1Gi    
+    additionalScrapeConfigs: 
+    - job_name: 'spark-pods-jmx'
+      kubernetes_sd_configs:
+      - role: pod
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_jmx_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_jmx_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_jmx_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - action: labelmap
+        regex: __meta_kubernetes_pod_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name     
+    - job_name: 'spark-driver-executors-pods'
+      kubernetes_sd_configs:
+      - role: pod
+      metrics_path: /metrics/executors/prometheus
+      scrape_interval: 15s
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_executors_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_executors_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_executors_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - action: labelmap
+        regex: __meta_kubernetes_pod_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name     
+      metric_relabel_configs:
+      - source_labels: [ __name__ ]
+        target_label: __name__
+        regex: metrics_application_[0-9]+_[0-9]+_(.+)
+        replacement: spark_$1
+      - source_labels: [ __name__ ]
+        target_label: __name__
+        regex: metrics_(.+)
+        replacement: spark_$1  
+          
 thanos:
   enabled: true
 
@@ -82,7 +145,7 @@ thanos:
       additionalHeadless: true
     mode: dual-mode
     replicationFactor: 1
-    replicaCount: 2
+    replicaCount: 1
     persistence: 
       enabled: true
       storageClass: longhorn
@@ -136,4 +199,4 @@ spark-dashboard:
     storage:
       class: "longhorn"
       type: "ReadWriteOnce"
-      size: "2Gi"
+      size: "1Gi"
