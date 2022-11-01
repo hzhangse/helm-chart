@@ -21,15 +21,21 @@ helm install  --debug -n monitor --create-namespace --set nodeExporter.enabled=f
 helm install  --debug -n monitor --create-namespace --set prometheus-node-exporter.service.port=9102  --set prometheus-node-exporter.service.targetPort=9102 kube-prometheus hzhangse-helmrepo/kube-prometheus-stack 
 
 # install with customer value.yaml
+
+helm install  --debug -n monitor  --create-namespace -f ./kube-prometheus-stack/values-prometheus.yaml kube-prometheus ./kube-prometheus-stack 
+
 helm upgrade  --debug -n monitor --create-namespace -f ./kube-prometheus-stack/values-prometheus.yaml kube-prometheus ./kube-prometheus-stack > prom-debug.yaml
 helm install --dry-run --debug -n monitor  --create-namespace -f ./kube-prometheus-stack/values-prometheus.yaml kube-prometheus ./kube-prometheus-stack > prom-debug.yaml
 helm template --dry-run --debug -n monitor  --create-namespace -f ./kube-prometheus-stack/values-prometheus.yaml kube-prometheus ./kube-prometheus-stack > prom-debug.yaml
 # select used images for helm charts 
 images=`cat prom-debug.yaml|grep  'image:' |sed 's/image://g'|sed 's/^[ \t]*//g' |sed 's/\"//g'|sort|uniq`
+
+images=`cat ./kube-prometheus-stack/values-prometheus.yaml |grep  'repository:' |sed 's/repository://g'|sed 's/^[ \t]*//g' |sed 's/\"//g'|sort|uniq`
 for image in ${images}
 do 
   pull="docker pull ${image}"
-  echo ${image#*/}
+  ## echo ${image#*/}
+  echo ${image}
 done   
 helm install --dry-run --debug -n monitor  --create-namespace -f ./kube-prometheus-stack/values-prometheus.yaml kube-prometheus ./kube-prometheus-stack |grep  'image:' |sed 's/image://g'|sed 's/^[ \t]*//g' |sort|uniq 
 
