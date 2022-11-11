@@ -3,14 +3,23 @@
     "version": "0.2.0",
     "configurations": [
         
+        // {
+        //     "type": "bashdb",
+        //     "request": "launch",
+        //     "name": "Bash-Debug (select script from list of sh files)",
+        //     "cwd": "${workspaceFolder}",
+        //     "program": "spark/run.sh",
+        //     "args": ["-Enative33","-nfl20" ,
+        //                "-c1", "-m512",  "-C1", "-M512",  "-i1", "-x1", "-d1", "-tdefault","-rtrue","-w2","-a3000" ,"-ucluster"]
+        // },
         {
             "type": "bashdb",
             "request": "launch",
             "name": "Bash-Debug (select script from list of sh files)",
             "cwd": "${workspaceFolder}",
-            "program": "spark/run.sh",
-            "args": ["-Enative33","-nfly5" ,
-                       "-c1", "-m512",  "-C1", "-M512",  "-i1", "-x1", "-d1", "-tdefault","-rtrue","-w2","-a2000" ,"-ucluster"]
+            "program": "readvalues.sh",
+            "argsString": "/Users/kyligence/git/helm-chart/kube-prometheus-stack/values-prometheus.yaml",
+            "args": ["/Users/kyligence/git/helm-chart/kube-prometheus-stack/values-prometheus.yaml"]
         }
         
     ]

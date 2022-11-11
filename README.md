@@ -84,3 +84,16 @@ helm install  --debug --dry-run -n spark-dashboard --create-namespace  spark-das
 
 # sample of pipeline jenkins
 see pipeline.groovy
+
+# metrics integrated jmx exporter with spark
+    --conf "spark.ui.prometheus.enabled=true" \
+    --conf "spark.kubernetes.driver.annotation.executors.prometheus.io/scrape=true" \
+    --conf "spark.kubernetes.driver.annotation.executors.prometheus.io/path=/metrics/executors/prometheus" \
+    --conf "spark.kubernetes.driver.annotation.executors.prometheus.io/port=4040" \
+    --conf "spark.kubernetes.driver.annotation.jmx.prometheus.io/scrape=true" \
+    --conf "spark.kubernetes.driver.annotation.jmx.prometheus.io/path=/metrics" \
+    --conf "spark.kubernetes.driver.annotation.jmx.prometheus.io/port=8080" \
+    --conf "spark.kubernetes.executor.annotation.jmx.prometheus.io/scrape=true" \
+    --conf "spark.kubernetes.executor.annotation.jmx.prometheus.io/path=/metrics" \
+    --conf "spark.kubernetes.executor.annotation.jmx.prometheus.io/port=8080"  \ 
+    --conf spark.metrics.appStatusSource.enabled=true \
