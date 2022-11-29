@@ -32,10 +32,11 @@ prometheus:
     image:
       repository: quay.io/prometheus/prometheus
       tag: v2.38.0
-      sha: ""
+
     enableRemoteWriteReceiver: true
     podAntiAffinity: "hard"
-
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
     ## If anti-affinity is enabled sets the topologyKey to use for anti-affinity.
     ## This can be changed to, for example, failure-domain.beta.kubernetes.io/zone
     ##
@@ -56,9 +57,9 @@ prometheus:
         - "--web.enable-admin-api"
         - "--web.route-prefix=/"
         - "--web.config.file=/etc/prometheus/web_config/web-config.yaml"
-        - "--storage.tsdb.min-block-duration=10m"
-        - "--storage.tsdb.max-block-duration=10m"
-        - "--storage.tsdb.retention.size=800MB"
+        - "--storage.tsdb.min-block-duration=1h"
+        - "--storage.tsdb.max-block-duration=1h"
+        - "--storage.tsdb.retention.size=2048MB"
         - "--storage.tsdb.retention.time=1h"      
     storageSpec: 
       volumeClaimTemplate:
@@ -66,7 +67,7 @@ prometheus:
           storageClassName: longhorn
           resources:
             requests:
-              storage: 1Gi    
+              storage: 2Gi    
     additionalScrapeConfigs: 
     - job_name: 'spark-pods-jmx'
       kubernetes_sd_configs:
@@ -162,7 +163,7 @@ thanos:
       storageClass: longhorn
       accessModes: 
         - ReadWriteOnce
-      size: 1Gi
+      size: 2Gi
 
   storegateway:
     enabled: true
@@ -174,7 +175,7 @@ thanos:
       storageClass: longhorn
       accessModes: 
         - ReadWriteOnce
-      size: 1Gi
+      size: 2Gi
 
 
 
@@ -190,7 +191,7 @@ thanos:
       storageClass: longhorn
       accessModes: 
         - ReadWriteOnce
-      size: 1Gi
+      size: 2Gi
 
   receiveDistributor:
     enabled: true
@@ -228,7 +229,7 @@ prometheus-node-exporter:
     targetPort: 9102 
   image:
     repository: quay.io/prometheus/node-exporter
-    tag: "v1.3.1"    
+    tag: v1.3.1    
 
 kube-state-metrics:
   image:
@@ -240,20 +241,35 @@ grafana:
     type: NodePort
   image:
     repository: grafana/grafana  
-    tag: "9.1.4"
+    tag: 9.1.4
   testFramework:
     enabled: true
-    image: "bats/bats"
-    tag: "v1.4.1"
+    image: bats/bats
+    tag: v1.4.1
   sidecar:
     image:
       repository: quay.io/kiwigrid/k8s-sidecar
       tag: 1.19.2
-
+  ingress:
+    enabled: true 
+    annotations: 
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/inbound-cidrs: 116.228.210.42/32,117.185.80.194/32,103.163.156.0/24,103.184.129.0/24,58.34.118.234/32
+      alb.ingress.kubernetes.io/ip-address-type: ipv4
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/subnets: subnet-038deb0b37229880f,subnet-03a5067b9dfb96bc4
+      alb.ingress.kubernetes.io/target-type: instance
+      kubernetes.io/ingress.class: alb
+    extraPaths: 
+    - path: /
+      pathType: Prefix
+      service:
+        name: kube-prometheus-grafana
+        
 spark-dashboard:
   enabled: true     
   influxdb:  
-    image: "influxdb:1.8.10"
+    image: influxdb:1.8.10
     storage:
       class: "longhorn"
       type: "ReadWriteOnce"

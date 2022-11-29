@@ -1,0 +1,230 @@
+--- 
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: kafka
+
+--- 
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: my-cluster
+spec:
+  kafka:
+    version: 3.2.0
+    replicas: 3
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+        authentication:
+          type: tls
+      - name: external
+        port: 9094
+        type: nodeport
+        tls: false        
+    config:
+      auto.create.topics.enable: true
+      num.partitions: 32
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      default.replication.factor: 3
+      min.insync.replicas: 2
+      inter.broker.protocol.version: "3.2"
+    storage:
+      type: persistent-claim
+      size: 5Gi
+      class: local-storage
+      deleteClaim: true
+  zookeeper:
+    replicas: 3
+    storage:
+      type: persistent-claim
+      size: 2Gi
+      class: local-storage
+      deleteClaim: true
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
+
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: local-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: data-my-cluster-zookeeper-0
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  # PV for mon must be a filesystem volume.
+  volumeMode: Filesystem
+  local:
+    # If you want to use dm devices like logical volume, please replace `/dev/sdb` with their device names like `/dev/vg-name/lv-name`.
+    path: /var/zk
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - node2
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: data-my-cluster-zookeeper-1
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  # PV for mon must be a filesystem volume.
+  volumeMode: Filesystem
+  local:
+    # If you want to use dm devices like logical volume, please replace `/dev/sdb` with their device names like `/dev/vg-name/lv-name`.
+    path: /var/zk
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - node3
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: data-my-cluster-zookeeper-2
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  # PV for mon must be a filesystem volume.
+  volumeMode: Filesystem
+  local:
+    # If you want to use dm devices like logical volume, please replace `/dev/sdb` with their device names like `/dev/vg-name/lv-name`.
+    path: /var/zk
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - node4
+
+
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: data-my-cluster-kafka-0
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  # PV for mon must be a filesystem volume.
+  volumeMode: Filesystem
+  local:
+    # If you want to use dm devices like logical volume, please replace `/dev/sdb` with their device names like `/dev/vg-name/lv-name`.
+    path: /var/kafka
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - node2
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: data-my-cluster-kafka-1
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  # PV for mon must be a filesystem volume.
+  volumeMode: Filesystem
+  local:
+    # If you want to use dm devices like logical volume, please replace `/dev/sdb` with their device names like `/dev/vg-name/lv-name`.
+    path: /var/kafka
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - node3
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: data-my-cluster-kafka-2
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  # PV for mon must be a filesystem volume.
+  volumeMode: Filesystem
+  local:
+    # If you want to use dm devices like logical volume, please replace `/dev/sdb` with their device names like `/dev/vg-name/lv-name`.
+    path: /var/kafka
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - node4              
+
+---
+##creeate topic for test
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: sparkmeasure
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: "my-cluster"
+spec:
+  partitions: 5
+  replicas: 2
